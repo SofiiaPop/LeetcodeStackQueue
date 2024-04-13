@@ -10,9 +10,13 @@ class Queue:
     
     def push(self, value):
         new_node = Node(value)
-        next = self.head
-        self.head = new_node
-        self.tail = next
+        if self.tail:
+            self.tail.next = new_node
+            self.tail = self.tail.next
+        else:
+            self.head = new_node
+            self.tail = new_node
+        
     
     def pop(self):
         if self.head is None:
@@ -24,39 +28,28 @@ class Queue:
         return output
 
     def top(self):
-        return self.head.data if self.head else None
+        return self.head.data 
 
     def empty(self):
         return self.head is None
 
 class MyStack:
     def __init__(self):
-        self.stack = Queue()
+        self.queue1 = Queue()
+        self.queue2 = Queue()
 
     def push(self, value):
-        self.stack.push(value)
-        if self.stack.tail and self.stack.head:
-            current = self.stack.head
-            while current.next:
-                current = current.next
-            self.stack.head.next = self.stack.tail
-    
+        self.queue2.push(value)
+        while not self.queue1.empty():
+            self.queue2.push(self.queue1.pop())
+
+        self.queue1, self.queue2 = self.queue2, self.queue1
+
     def pop(self):
-        if self.empty():
-            return None
-        if self.stack.head:
-            output = self.stack.head.data
-            if self.stack.tail:
-                self.stack.tail = self.stack.tail.next
-            self.stack.head = self.stack.head.next
-        elif self.stack.tail:
-            output = self.stack.tail.data
-            self.stack.head = None
-        return output
-    
+        return self.queue1.pop()
+
     def top(self):
-        return self.stack.head.data if self.stack.head else self.stack.tail.data
-    
+        return self.queue1.top()
+
     def empty(self):
-        return self.stack.empty()
-  
+        return self.queue1.empty()
